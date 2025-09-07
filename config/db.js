@@ -1,14 +1,19 @@
 const mongoose = require("mongoose");
 
-const MONGO_URI = process.env.MONGO_URI;
+
+
+
+
 
 const connectDB = async function () {
     try {
-        await mongoose.connect(MONGO_URI, {
+        await mongoose.connect("mongodb+srv://anil_sakineni:vdWvXe7emwNTD8EG@cluster-1.uzh01oa.mongodb.net/bootcamp?retryWrites=true&w=majority&appName=cluster-1", {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            useFindAndModify:false
+            // useFindAndModify: false
         });
+        console.log("connected to db");
+        
 
     } catch (error) {
         console.log(error);

@@ -1,10 +1,15 @@
 
 const express = require("express");
-const connectDB = require("./config/db");
+const connectDB = require("./config/db.js");
+const dotenv=require("dotenv")
 
 
 //route files
 const bootcamps = require("./routes/bootcamps.js");
+const User=require("./routes/user.js")
+
+// dotenv config
+dotenv.config()
 
 // connect to Database
 connectDB();
@@ -16,6 +21,7 @@ app.use(express.json());
 
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);
+app.use("/api/user",User)
 
 
 const PORT = 5000;
