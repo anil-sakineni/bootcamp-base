@@ -1,3 +1,6 @@
+const BootCamp = require("../models/BootCamp");
+const asyncHandler = require("../utils/asyncHandler");
+
 exports.getBootcamps = async (req, res, next) => {
     // take the request
 
@@ -8,6 +11,7 @@ exports.getBootcamps = async (req, res, next) => {
 
 }
 exports.createBootCamp = async (req, res, next) => {
+    try {
         const bootCamp = await BootCamp.create(req.body);
         return res.status(201).json(
             { 
@@ -15,8 +19,13 @@ exports.createBootCamp = async (req, res, next) => {
                 data: bootCamp 
             }
         );
+    }catch(error){
+        console.log("Error occured while creating boot camp", error);
+        next(error);
 
+    }
 }
+
 
 
 exports.getBootcamp = async (req, res, next) => {

@@ -1,15 +1,17 @@
 
 const express = require("express");
-const connectDB = require("./config/db.js");
-const dotenv=require("dotenv")
-
+const connectDB = require("./config/db");
+const dotenv=require("dotenv");
+const cors = require("cors");
+const errorHandler = require("./middleware/error");
 
 //route files
-const bootcamps = require("./routes/bootcamps.js");
-const User=require("./routes/user.js")
+const bootcamps = require("./routes/bootcamps");
+const User=require("./routes/user")
 
-// dotenv config
-dotenv.config()
+
+// load the env varaiables
+dotenv.config({path: './config/config.dev.env'});
 
 // connect to Database
 connectDB();
@@ -19,12 +21,25 @@ const app = express();
 // Body Parser
 app.use(express.json());
 
+//enable cors
+
+app.use(cors())
+
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);
-app.use("/api/user",User)
+app.use("/api/v1/user",User);
+app.use("/api/v1/auth",User);
 
 
-const PORT = 5000;
+
+// Erro handle middleware
+app.use(errorHandler);
+
+
+
+
+
+const PORT = process.env.PORT || 5000;
 
 
 app.get('/health', (request, response) =>{

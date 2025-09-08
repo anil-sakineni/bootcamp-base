@@ -1,8 +1,10 @@
 const User = require("../models/User")
 
 exports.createUser = async (req, res, next) => {
+    // hash passowrd and modify in the req.body
     const user = await User.create(req.body)
     res.status(200).json({
+        "success": true,
         "message": "user created successfully",
         "user": user
     })
@@ -10,9 +12,9 @@ exports.createUser = async (req, res, next) => {
 }
 
 exports.getUsers = async (req, res, next) => {
-
     const users = await User.find();
     res.status(200).json({
+        "succes": true,
         "message": "found all users",
         "users": users
     })
