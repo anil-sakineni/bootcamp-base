@@ -1,39 +1,48 @@
 const mongoose = require('mongoose');
+const bcrypt = require("bcrypt");
 
 const UserSchema = mongoose.Schema({
-    name:{
+    name: {
         type: String,
-        required:[true, 'Please add a name']
+        required: [true, 'Please add a name']
     },
-    email:{
-        type:String,
-        required:[true, 'Please add an email'],
+    email: {
+        type: String,
+        required: [true, 'Please add an email'],
         unique: true,
-        match:[/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'please use a valid email']
+        match: [/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'please use a valid email']
     },
-    role:{
-        type:String,
-        enum:['user','publisher'],
-        default:'user'
+    role: {
+        type: String,
+        enum: ['user', 'publisher'],
+        default: 'user'
     },
-    password:{
-        type:String,
-        required:[true, 'Please add password'],
-        minlength:6,
+    password: {
+        type: String,
+        required: [true, 'Please add password'],
+        minlength: 6,
         select: false
     },
-    resetPasswordToken:String,
-    resetPasswordExpire:Date,
-    createdAt:{
-        type:Date,
-        default:Date.now
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 })
 
 UserSchema.pre('save', async function (next) {
+    const salt = await bcrypt.genSalt(5)
+    console.log("salt==>", salt);
 
+
+    this.password = await bcrypt.hash(this.password, salt)
+    console.log("passwird==>", this.password);
+
+
+    next();
 
 });
 
 
-module.exports = mongoose.model('User',UserSchema);
+module.exports = mongoose.model('User', UserSchema);
