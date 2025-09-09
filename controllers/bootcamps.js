@@ -14,12 +14,12 @@ exports.createBootCamp = async (req, res, next) => {
     try {
         const bootCamp = await BootCamp.create(req.body);
         return res.status(201).json(
-            { 
+            {
                 success: true,
-                data: bootCamp 
+                data: bootCamp
             }
         );
-    }catch(error){
+    } catch (error) {
         console.log("Error occured while creating boot camp", error);
         next(error);
 
@@ -29,19 +29,34 @@ exports.createBootCamp = async (req, res, next) => {
 
 
 exports.getBootcamp = async (req, res, next) => {
-    return res.status(200).json({ success: true });
+    try {
+        return res.status(200).json({
+            "success": true
+        })
+    } catch (err) {
+        next(err)
+    }
 
 }
 
 exports.updateBootCamp = async (req, res, next) => {
-    return res.status(200).json({ success: true });
+    try {
+        return res.status(200).json({
+            "success": true
+        })
+    } catch (err) {
+        next(err)
+    }
 
 }
 
 exports.deleteBootcamp = async (req, res, next) => {
-    return res.status(200).json({ success: true });
+    try {
+        return res.status(200).json({
+            "success": true
+        })
+    } catch (err) {
+        next(err)
+    }
 
 }
-
-
-
