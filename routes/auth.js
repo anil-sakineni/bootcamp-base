@@ -18,9 +18,9 @@ router.post("/register", register);
 router.post("/login", login);
 router.get("/me", getMe);
 router.post("/forgotPassword", forgotPassword);
-router.put("/resetPassword", resetPassword);
-router.put("/updateDetails", updateDetails);
-router.put("/updatePassword", updatePassword);
+router.post("/resetPassword/:token", resetPassword);
+router.put("/updateDetails/:id", updateDetails);
+router.put("/updatePassword/:id", updatePassword);
 router.get("/logout", logout);
 
 
