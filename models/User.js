@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require("bcrypt");
-const crypto = require("crypto")
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
 const UserSchema = mongoose.Schema({
     name: {
@@ -15,7 +16,7 @@ const UserSchema = mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'publisher'],
+        enum: ['user', 'publisher', "admin"],
         default: 'user'
     },
     password: {
@@ -55,4 +56,12 @@ UserSchema.methods.generateResetPasswordToken = function () {
     return resetToken;
 }
 
+UserSchema.methods.getJwtToken = function () {
+    const generateToken = jwt.sign(
+        { id: this._id, role: this.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "10m" }
+    )
+    return generateToken
+}
 module.exports = mongoose.model('User', UserSchema);

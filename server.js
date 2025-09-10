@@ -4,8 +4,8 @@ const connectDB = require("./config/db");
 const cors = require("cors");
 const errorHandler = require("./middleware/error");
 const logger = require("./utils/logger")
-const pino=require("pino-http")
-
+const pino = require("pino-http")
+const cookieParser = require("cookie-parser")
 //route files
 const bootcamps = require("./routes/bootcamps");
 const User = require("./routes/user");
@@ -19,13 +19,16 @@ const app = express();
 // Body Parser
 app.use(express.json());
 
+// cookie parser
+app.use(cookieParser())
+
 //enable cors
 
 app.use(cors())
 
 // http logger
-app.use(pino({logger}))
- 
+app.use(pino({ logger }))
+
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/user", User);

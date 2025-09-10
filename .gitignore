@@ -1,3 +1,4 @@
 node_modules
 config/config.dev.env
 config/config.prod.env
+index.js
