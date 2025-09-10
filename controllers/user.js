@@ -4,7 +4,6 @@ const User = require("../models/User")
 //@route - /api/v1/user/?createUser
 //@access - public
 exports.createUser = async (req, res, next) => {
-    // hash passowrd and modify in the req.body
     try {
         const user = await User.create(req.body)
         res.status(200).json({

@@ -3,11 +3,13 @@ const express = require("express");
 const connectDB = require("./config/db");
 const cors = require("cors");
 const errorHandler = require("./middleware/error");
+const logger = require("./utils/logger")
+const pino=require("pino-http")
 
 //route files
 const bootcamps = require("./routes/bootcamps");
-const User = require("./routes/user")
-const auth=require("./routes/auth")
+const User = require("./routes/user");
+const auth = require("./routes/auth")
 
 // connect to Database
 connectDB();
@@ -21,6 +23,9 @@ app.use(express.json());
 
 app.use(cors())
 
+// http logger
+app.use(pino({logger}))
+ 
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/user", User);
@@ -44,7 +49,8 @@ app.get('/health', (request, response) => {
 
 
 app.listen(PORT, () => {
-    console.log(`Server is listening on port : ${PORT}`);
+    logger.info(`Server is listening on port : ${PORT}`)
+
 });
 
 
