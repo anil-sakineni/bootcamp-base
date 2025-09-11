@@ -58,8 +58,7 @@ UserSchema.methods.generateResetPasswordToken = function () {
 
 UserSchema.methods.getJwtToken = function () {
     const generateToken = jwt.sign(
-        { id: this._id, role: this.role },
-        process.env.JWT_SECRET,
+        { id: this._id},process.env.JWT_SECRET,
         { expiresIn: "10m" }
     )
     return generateToken
