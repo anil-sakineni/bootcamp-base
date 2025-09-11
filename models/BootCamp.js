@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
-
 const schema = {
     name: {
         type: String,
-        required : [true, "Please add bootcamp name"],
+        required: [true, "Please add bootcamp name"],
         unique: true,
         maxLength: [50, "name can not more than 50 characters"]
     },
@@ -41,9 +40,10 @@ const schema = {
         type: String,
         default: 'no-photo.jpg'
     },
-
     user: {
-
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     createdAt: {
         type: Date,
@@ -51,7 +51,6 @@ const schema = {
     }
 
 }
-
 
 const BootCampSchema = new mongoose.Schema(schema);
 
