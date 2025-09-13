@@ -35,13 +35,8 @@ app.use("/api/v1/user", User);
 app.use("/api/v1/auth", auth);
 
 
-
 // Error handle middleware
 app.use(errorHandler);
-
-
-
-
 
 const PORT = process.env.PORT || 5000;
 
