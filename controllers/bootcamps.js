@@ -9,20 +9,6 @@ exports.getBootcamps = async (req, res, next) => {
 
     try {
 
-        const token = req.cookies.token || req.headers.authorization.split(" ")[1];
-
-        if (!token) {
-            return res.status(401).json({ success: false, error: "Not authorized" });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const { id, role } = decoded;
-
-
-        if (!["user", "publisher", "admin"].includes(role)) {
-            return res.status(403).json({ success: false, error: " not allowed" });
-        }
-
         const bootcamps = await BootCamp.find();
 
         return res.status(200).json({
@@ -45,15 +31,18 @@ exports.createBootCamp = async (req, res, next) => {
         req.body.user = req.user.id;
 
         // check of bootcamp
-        const publishedBootcamp = await BootCamp.findOne({user: req.user.id});
-        
+        const publishedBootcamp = await BootCamp.findOne({ user: req.user.id });
+
         // - publisher is allowed to create only one bootcamp
         // - admin is allowed to create multiple bootcamps
-        if(publishedBootcamp && req.user.role != "admin"){
+        if (publishedBootcamp && req.user.role != "admin") {
+
             return next(new Errorresponse(`the user with id ${req.user.id} already published a one boot camp`, 400));
         }
 
+
         const bootCamp = await BootCamp.create(req.body);
+
         return res.status(201).json(
             {
                 success: true,
@@ -73,26 +62,15 @@ exports.createBootCamp = async (req, res, next) => {
 //@access - public
 exports.getBootcamp = async (req, res, next) => {
     try {
-        const token = req.cookies.token || req.headers.authorization.split(" ")[1];
-
-        if (!token) {
-            return res.status(401).json({ success: false, error: "Not authorized" });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const { role } = decoded;
-
-
-        if (!["user", "publisher", "admin"].includes(role)) {
-            return res.status(403).json({ success: false, error: " not allowed" });
-        }
 
         const bootcamp = await BootCamp.findById(req.params.id)
+        console.log("bootcamp", bootcamp);
+
 
         return res.status(200).json({
             "success": true,
             "message": `founded bootcamp by ${req.params.id}`,
-            bootcamp
+            "bootcamp": bootcamp
         })
     } catch (err) {
         next(err)
@@ -106,23 +84,31 @@ exports.getBootcamp = async (req, res, next) => {
 exports.updateBootCamp = async (req, res, next) => {
     try {
 
-        const token = req.cookies.token || req.headers.authorization.split(" ")[1];
-        if (!token) {
-            return res.status(401).json({ success: false, error: "Not authorized" });
+        const bootCamp = await BootCamp.findById(req.params.id);
+
+        if (!bootCamp) {
+            return next(new Errorresponse(`no bootcamp found by this ${req.params.id}`, 404));
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const { role } = decoded;
+        if (bootCamp.user != req.user.id && req.user.role != "admin") {
+            return next(new Errorresponse(`not alloed to update`, 400))
 
-
-        if (!["publisher", "admin"].includes(role)) {
-            return res.status(403).json({ success: false, error: " not allowed" });
         }
-        const bootcamp = await BootCamp.findByIdAndUpdate(req.params.id, req.body)
+
+
+        const updatedBootcamp = await BootCamp.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        });
+        if (!updatedBootcamp) {
+            return res.status(404).json({
+                success: false,
+                message: `bootcamp not found with id ${req.params.id}`
+            });
+        }
         return res.status(200).json({
             "success": true,
-            "message": "Bootcamp updated by admin or publisher",
-            "updated": bootcamp
+            "message": "Bootcamp updated successfully"
         })
     } catch (err) {
         next(err)
@@ -135,22 +121,23 @@ exports.updateBootCamp = async (req, res, next) => {
 //@access - private
 exports.deleteBootcamp = async (req, res, next) => {
     try {
-        const token = req.cookies.token || req.headers.authorization.split(" ")[1];
 
-        if (!token) {
-            return res.status(401).json({ success: false, error: "Not authorized" });
+
+        const bootCamp = await BootCamp.findById(req.params.id);
+
+        if (!bootCamp) {
+            return next(new Errorresponse(`no bootcamp found by this ${req.params.id}`, 404));
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const { role } = decoded;
+        if (bootCamp.user != req.user.id && req.user.role != "admin") {
+            return next(new Errorresponse(`not alloed to delete`, 400))
 
-        if (!["admin"].includes(role)) {
-            return res.status(403).json({ success: false, error: " not allowed" });
         }
+
         await BootCamp.findByIdAndDelete(req.params.id)
         return res.status(200).json({
             "success": true,
-            "message": "Bootcamp deleted by admin"
+            "message": "Bootcamp deleted successfully"
 
         })
     } catch (err) {
