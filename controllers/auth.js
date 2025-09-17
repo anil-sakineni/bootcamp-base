@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const crypto = require("crypto");
+const ErrorResponse = require("../utils/errorResponse");
 
 
 //@desc - register a user
@@ -88,24 +89,35 @@ exports.getMe = async function (req, res, next) {
 exports.forgotPassword = async function (req, res, next) {
     try {
 
-        const { email } = req.body
-        const user = await User.findOne({ email })
+        //naresh.kakarla@gmail.com
+        //anil.sa@gmail.com
+
+        const user = await User.findOne({ email: req.body.email });
+
+        // two factor authentication or send token to the perticular email
 
         if (!user) {
-            throw new Error(" user not found ")
+            next(new ErrorResponse(`user not found with the email ${req.body.email}`), 404);
         }
+        //get reset token
+        const resetToken = user.generateResetPasswordToken();
 
-        const resetToken = user.generateResetPasswordToken()
-        await user.save()
+        //save the user
+        await user.save();
 
-        const resetUrl = `http://localhost:3000/api/v1/auth/resetPassword/${resetToken}`;
+        //create reset url
+        const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/resetPassword/${resetToken}`;
 
+        const message = `You are receiving this email because you (or someone else) has requested the reset of password. 
+        if you have requested the reset password please click below link to generate new password: \n\n ${resetUrl}`;
 
-        return res.status(200).json({
-            "success": true,
-            "message": "reset link ",
-            " reseturl": resetUrl
-        })
+        // return res.status(200).json({
+        //     "success": true,
+        //     "message": message,
+        //     " reseturl": resetUrl
+        // })
+
+        await sendEmail({email: user.email, sub: "Password rest token", message})
     } catch (err) {
         next(err)
     }
@@ -117,9 +129,7 @@ exports.forgotPassword = async function (req, res, next) {
 
 exports.resetPassword = async (req, res, next) => {
     try {
-        const { token } = req.params;
-        const { newPassword } = req.body;
-
+        const newPassword = req.body.newPassword;
         if (!newPassword) {
             return res.status(400).json({
                 success: false,
@@ -129,7 +139,7 @@ exports.resetPassword = async (req, res, next) => {
 
         const hashedToken = crypto
             .createHash("sha256")
-            .update(token)
+            .update(resetToken)
             .digest("hex");
 
         const user = await User.findOne({
