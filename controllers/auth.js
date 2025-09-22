@@ -54,17 +54,7 @@ exports.login = async function (req, res, next) {
 //@access - public
 exports.getMe = async function (req, res, next) {
     try {
-        const id=req.user.id
-               
-        const user=await User.findById(id);
-        if(!user){
-            res.status(404).json({
-                success:false,
-                message:"no user found"
-            })
-        }
-
-
+        const user = req.user;
         return res.status(200).json({
             "success": true,
             "user":user
