@@ -1,6 +1,7 @@
 const BootCamp = require("../models/BootCamp");
 const jwt = require("jsonwebtoken");
 const Errorresponse = require("../utils/errorResponse");
+const courses = require("../models/courses");
 
 //@desc - get bootcamps via user
 //@route - /api/v1/bootcamps
@@ -43,7 +44,15 @@ exports.createBootCamp = async (req, res, next) => {
 
         const bootCamp = await BootCamp.create(req.body);
 
-        return res.status(201).json(
+        const token1 = await bootCamp.getJwtToken();
+
+        const options = {
+            secure: true,
+            expires: new Date(Date.now() + 10 * 60 * 1000),
+            httpOnly: true
+        }
+
+        return res.status(201).cookie("token1", token1, options).json(
             {
                 success: true,
                 message: "BootCamp crteated successfully",
@@ -63,11 +72,17 @@ exports.createBootCamp = async (req, res, next) => {
 exports.getBootcamp = async (req, res, next) => {
     try {
 
-        const bootcamp = await BootCamp.findById(req.params.id)
-        console.log("bootcamp", bootcamp);
+        const bootcamp = await BootCamp.findById(req.params.id);
 
+        const token1 = await bootcamp.getJwtToken();
 
-        return res.status(200).json({
+        const options = {
+            secure: true,
+            expires: new Date(Date.now() + 10 * 60 * 1000),
+            httpOnly: true
+        }
+
+        return res.status(200).cookie("token1", token1, options).json({
             "success": true,
             "message": `founded bootcamp by ${req.params.id}`,
             "bootcamp": bootcamp
@@ -133,8 +148,8 @@ exports.deleteBootcamp = async (req, res, next) => {
             return next(new Errorresponse(`not alloed to delete`, 400))
 
         }
-
-        await BootCamp.findByIdAndDelete(req.params.id)
+        await courses.deleteMany({bootcamp:req.params.id});
+        await BootCamp.findByIdAndDelete(req.params.id);
         return res.status(200).json({
             "success": true,
             "message": "Bootcamp deleted successfully"
