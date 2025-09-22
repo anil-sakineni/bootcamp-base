@@ -30,11 +30,11 @@ app.use(cors())
 // http logger
 app.use(pino({ logger }))
 
+
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/user", User);
 app.use("/api/v1/auth", auth);
-app.use("/api/v1/course",course);
 
 
 // Error handle middleware

@@ -20,7 +20,9 @@ const schema = {
     },
     minimumSkill: {
         type: String,
-        required: true
+        required: true,
+        enum: ['beginner', 'intermediate', 'advanced']
+
     },
     ScholarshipAvailable: {
         type: Boolean,

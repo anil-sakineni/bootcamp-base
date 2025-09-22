@@ -6,11 +6,12 @@ const {
     updateCourse,
     deleteCourse
 } = require("../controllers/courses");
+
 const router = express.Router();
 
-router.get("/getCourses", protect, authorize("user", "publisher", "admin"), getCourses);
-router.post("/createCourse", protect, authorize("publisher", "admin"), createCourse);
-router.put("/updateCourse/:id", protect, authorize("publisher", "admin"), updateCourse);
-router.delete("/deleteCourse/:id", protect, authorize("publisher", "admin"), deleteCourse);
+router.get("/", getCourses);
+router.post("/", protect, authorize("publisher", "admin"), createCourse);
+router.put("/:id", protect, authorize("publisher", "admin"), updateCourse);
+router.delete("/:id", protect, authorize("publisher", "admin"), deleteCourse);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const course = require("../models/courses");
+const Course = require("../models/courses");
 const Errorresponse = require("../utils/errorResponse");
 const jwt = require("jsonwebtoken");
 const BootCamp = require("../models/BootCamp");
@@ -13,36 +13,38 @@ exports.getCourses = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
-
-
 }
 
+
+//@desc - create new course
+//@route - /api/v1/bootcamps/:bootcampId/courses/
+//@access - private
 exports.createCourse = async (req, res, next) => {
     try {
-        let token;
-        if (req.cookies.token1) {
-            token = req.cookies.token1;
-        }
-        else {
-            return next(new Errorresponse("no token found", 404))
-        }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const bootcamp = await BootCamp.findById(decoded.id);
-        if (!bootcamp) {
-            return res.status(400).json({
-                success: false,
-                message: "no bootcamp found"
-            })
-
-        }
-        req.body.bootcamp = bootcamp.id;
+        req.body.bootcamp = req.params.bootcampId;
         req.body.user = req.user.id;
-        const createCourse = await course.create(req.body);
+
+        const bootcamp = await BootCamp.findById(req.params.bootcampId);
+
+        if(!bootcamp){
+            next(new Errorresponse(`Bootcapm not found with id ${req.params.bootcampId}`, 404));
+        }
+
+        //make sure user owns the bootcamp or has admin role.
+
+        if(bootcamp.user.toString() != req.user.id || req.user.role != "admin"){
+            next(new Errorresponse(`user ${req.user.id} is not authorized to create course`, 401));
+        }
+
+        const course = await Course.create(req.body);
+
         res.status(201).json({
             message: "course create successfully",
-            course: createCourse
+            success: true,
+            course: course
         })
+
     } catch (err) {
         next(err)
     }
