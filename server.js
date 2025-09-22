@@ -1,57 +1,50 @@
-require("dotenv").config({ path: './config/config.dev.env' })
+require("dotenv").config({ path: "./config/config.dev.env" });
 const express = require("express");
 const connectDB = require("./config/db");
 const cors = require("cors");
 const errorHandler = require("./middleware/error");
-const logger = require("./utils/logger")
-const pino = require("pino-http")
-const cookieParser = require("cookie-parser")
+const requestIdMiddleware = require("./middleware/requestId");
+const logger = require("./utils/logger");
+const cookieParser = require("cookie-parser");
+
 //route files
 const bootcamps = require("./routes/bootcamps");
 const User = require("./routes/user");
 const auth = require("./routes/auth");
-const course=require("./routes/courses")
 
 // connect to Database
 connectDB();
 
 const app = express();
 
+//RequestId generator
+app.use(requestIdMiddleware);
+
 // Body Parser
 app.use(express.json());
 
 // cookie parser
-app.use(cookieParser())
+app.use(cookieParser());
 
 //enable cors
 
-app.use(cors())
+app.use(cors());
 
-// http logger
-app.use(pino({ logger }))
 
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/user", User);
 app.use("/api/v1/auth", auth);
-app.use("/api/v1/course",course);
-
 
 // Error handle middleware
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-
-app.get('/health', (request, response) => {
-    response.status(200).json({ message: "API is running" })
+app.get("/health", (request, response) => {
+  response.status(200).json({ message: "API is running" });
 });
-
 
 app.listen(PORT, () => {
-    logger.info(`Server is listening on port : ${PORT}`)
-
+  logger.info(`Server is listening on port : ${PORT}`, "1234");
 });
-
-
-

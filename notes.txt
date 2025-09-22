@@ -1,0 +1,10 @@
+Log Levels
+ - tarce -> very detailed information 
+ - debug -> Devleper understndaing details
+ - info -> Normal flow
+ - warn -> Something unexpected, but app still runs
+ - error -> Major issue operation failed
+ - fatal -> App can not continue its a crash
+
+
+ Pino
