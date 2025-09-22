@@ -7,9 +7,9 @@ const ErrorResponse = require("../utils/errorResponse");
 exports.protect = async (request, response, next) => {
     let token;
 
-    if (request.headers.authorization && request.headers.authorization.startsWith("Bearer")) {
+    if (request.headers.authorization && request.headers.authorization.startsWith("Bearer") ||request.cookies.token) {
         // set token from the bearer token from header
-        token = request.headers.authorization.split(" ")[1];
+        token =request.cookies.token || request.headers.authorization.split(" ")[1] ;
     }
 
     if (!token) {

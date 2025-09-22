@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const crypto = require("crypto");
 const ErrorResponse = require("../utils/errorResponse");
+const sendEmail = require("../utils/sendEmail");
 
 
 //@desc - register a user
@@ -9,24 +10,14 @@ const ErrorResponse = require("../utils/errorResponse");
 exports.register = async function (req, res, next) {
     try {
         const { name, email, role, password } = req.body;
-        if (!['user', 'publisher'].includes(role)) {
+        if (!['user'].includes(role)) {
             return res.status(400).json({
                 "success": false,
                 "message": "not allowed to register",
             })
         }
         const user = await User.create({ name, email, role, password })
-        const token = await user.getJwtToken()
-        const options = {
-            secure: true,
-            expires: new Date(Date.now() + 10 * 60 * 1000),
-            httpOnly: true
-        }
-        return res.status(200).cookie("token", token, options).json({
-            "success": true,
-            "message": "User created successfully",
-            "User": user
-        })
+        sendToken(user, 201, "user created successfully", res)
     } catch (err) {
         next(err)
     }
@@ -41,28 +32,17 @@ exports.login = async function (req, res, next) {
         const { email, password } = req.body;
         const user = await User.findOne({ email }).select("+password")
         if (!user) {
-            throw new Error("invalid user deatils")
+            next(new ErrorResponse("no user founded", 404));
         }
 
         const isMatch = await user.matchPassword(password)
 
         if (!isMatch) {
-            throw new Error("invalid password")
+            next(new ErrorResponse("invalid password", 400));
         }
 
-        const token = await user.getJwtToken();
+        sendToken(user, 201, "user login successfully", res)
 
-        const options = {
-            secure: true,
-            expires: new Date(Date.now() + 10 * 60 * 1000),
-            httpOnly: true
-        }
-
-        return res.status(200).cookie("token", token, options).json({
-            "success": true,
-            "Message": "login success",
-            "loginUser": user
-        })
     } catch (err) {
         next(err)
     }
@@ -74,8 +54,20 @@ exports.login = async function (req, res, next) {
 //@access - public
 exports.getMe = async function (req, res, next) {
     try {
+        const id=req.user.id
+               
+        const user=await User.findById(id);
+        if(!user){
+            res.status(404).json({
+                success:false,
+                message:"no user found"
+            })
+        }
+
+
         return res.status(200).json({
-            "success": true
+            "success": true,
+            "user":user
         })
 
     } catch (err) {
@@ -117,7 +109,12 @@ exports.forgotPassword = async function (req, res, next) {
         //     " reseturl": resetUrl
         // })
 
-        await sendEmail({email: user.email, sub: "Password rest token", message})
+        await sendEmail({ gmail: user.email, subject: "password reset token", text: message })
+        res.status(200).json({
+            success: true,
+            "message": message,
+
+        })
     } catch (err) {
         next(err)
     }
@@ -130,6 +127,7 @@ exports.forgotPassword = async function (req, res, next) {
 exports.resetPassword = async (req, res, next) => {
     try {
         const newPassword = req.body.newPassword;
+        const resetToken = req.params.resetToken
         if (!newPassword) {
             return res.status(400).json({
                 success: false,
@@ -162,7 +160,7 @@ exports.resetPassword = async (req, res, next) => {
 
         return res.status(200).json({
             success: true,
-            message: "Password reset successfully", user
+            message: "Password reset successfully"
 
         });
 
@@ -177,9 +175,12 @@ exports.resetPassword = async (req, res, next) => {
 exports.updateDetails = async function (req, res, next) {
 
     try {
-        const id = req.params.id
+        const id = req.user.id
         const { name, email } = req.body
-        const updatedUser = await User.findByIdAndUpdate(id, { name, email })
+        const updatedUser = await User.findByIdAndUpdate(id, { name, email }, {
+            new: true,
+            runValidators: true
+        })
         return res.status(200).json({
             "success": true,
             "message": "user updated successfully",
@@ -198,7 +199,7 @@ exports.updatePassword = async function (req, res, next) {
 
     try {
         const { currentPassword, newPassword } = req.body;
-        const id = req.params.id
+        const id = req.user.id
         if (!currentPassword && !newPassword) {
             return res.status(400).json({
                 "success": false,
@@ -236,11 +237,32 @@ exports.updatePassword = async function (req, res, next) {
 exports.logout = async function (req, res, next) {
 
     try {
+        res.cookie("token",null,{
+            httpOnly:true,
+            expires: new Date(Date.now())
+        })
         return res.status(200).json({
-            "success": true
+            "success": true,
+            message:"logout successfully"
         })
     } catch (err) {
         next(err)
     }
 
+}
+
+
+
+sendToken = async (user, statusCode, message, res) => {
+    const token = await user.getJwtToken()
+    const options = {
+        secure: true,
+        expires: new Date(Date.now() + 10 * 60 * 1000),
+        httpOnly: true
+    }
+    return res.status(statusCode).cookie("token", token, options).json({
+        "success": true,
+        "message": message,
+
+    })
 }
