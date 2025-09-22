@@ -1,4 +1,6 @@
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+
 
 const schema = {
     name: {
@@ -13,7 +15,10 @@ const schema = {
         required: [true, 'Please Add Description'],
         maxlength: [500, 'description can not be more than 500 characters']
     },
-
+    website: {
+        type: String,
+        required: [true, "please add website link"]
+    },
     phone: {
         type: String,
         maxlength: [10, 'phone can not be more than 10 characters']
@@ -28,8 +33,28 @@ const schema = {
         required: [true, 'please add an address']
     },
 
-    // TODO - location
+    carrers: {
+        type: String,
+        enum: ["FullStackWebDevelopment", "DataScience", "Devops"],
+        default: "FullStackWebDevelopment"
 
+    },
+    housing: {
+        type: Boolean,
+        default: false
+    },
+    jobAssistance: {
+        type: Boolean,
+        default: false
+    },
+    jobGurantee: {
+        type: Boolean,
+        default: false
+    },
+    acceptGi: {
+        type: Boolean,
+        default: false
+    },
     averageRating: {
         type: Number,
         min: [1, 'Rating must be at least 1'],
@@ -53,5 +78,13 @@ const schema = {
 }
 
 const BootCampSchema = new mongoose.Schema(schema);
+
+BootCampSchema.methods.getJwtToken = function () {
+    const generateToken = jwt.sign(
+        { id: this._id }, process.env.JWT_SECRET,
+        { expiresIn: process.env.EXPIRES_IN });
+
+    return generateToken;
+}
 
 module.exports = mongoose.model("BootCamp", BootCampSchema);

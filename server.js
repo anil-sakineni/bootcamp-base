@@ -9,7 +9,8 @@ const cookieParser = require("cookie-parser")
 //route files
 const bootcamps = require("./routes/bootcamps");
 const User = require("./routes/user");
-const auth = require("./routes/auth")
+const auth = require("./routes/auth");
+const course=require("./routes/courses")
 
 // connect to Database
 connectDB();
@@ -33,6 +34,7 @@ app.use(pino({ logger }))
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/user", User);
 app.use("/api/v1/auth", auth);
+app.use("/api/v1/course",course);
 
 
 // Error handle middleware
