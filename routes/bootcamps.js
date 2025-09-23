@@ -9,7 +9,7 @@ const {
 } = require("../controllers/bootcamps");
 
 // Include Other Resourse Routers
-const courseRouter = require("./courses");
+const courseRouter = require("../routes/courses");
 
 const router = express.Router();
 
@@ -26,6 +26,6 @@ router
     .route("/:id")
     .get(protect, authorize("user", "publisher", "admin"), getBootcamp)
     .put(protect, authorize("publisher","admin"), updateBootCamp)
-    .delete(protect, authorize("admin"), deleteBootcamp);
+    .delete(protect, authorize("publisher","admin"), deleteBootcamp);
 
 module.exports = router;

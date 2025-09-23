@@ -7,7 +7,7 @@ const {
     deleteCourse
 } = require("../controllers/courses");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.get("/", getCourses);
 router.post("/", protect, authorize("publisher", "admin"), createCourse);

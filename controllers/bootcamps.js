@@ -1,7 +1,7 @@
 const BootCamp = require("../models/BootCamp");
 const jwt = require("jsonwebtoken");
 const Errorresponse = require("../utils/errorResponse");
-const courses = require("../models/courses");
+const courses = require("../models/Course");
 
 //@desc - get bootcamps via user
 //@route - /api/v1/bootcamps
@@ -44,15 +44,8 @@ exports.createBootCamp = async (req, res, next) => {
 
         const bootCamp = await BootCamp.create(req.body);
 
-        const token1 = await bootCamp.getJwtToken();
 
-        const options = {
-            secure: true,
-            expires: new Date(Date.now() + 10 * 60 * 1000),
-            httpOnly: true
-        }
-
-        return res.status(201).cookie("token1", token1, options).json(
+        return res.status(201).json(
             {
                 success: true,
                 message: "BootCamp crteated successfully",
@@ -144,11 +137,11 @@ exports.deleteBootcamp = async (req, res, next) => {
             return next(new Errorresponse(`no bootcamp found by this ${req.params.id}`, 404));
         }
 
-        if (bootCamp.user != req.user.id && req.user.role != "admin") {
+        if (bootCamp.user.toString() != req.user.id && req.user.role != "admin") {
             return next(new Errorresponse(`not alloed to delete`, 400))
 
         }
-        await courses.deleteMany({bootcamp:req.params.id});
+        await courses.deleteMany({ bootcamp: req.params.id });
         await BootCamp.findByIdAndDelete(req.params.id);
         return res.status(200).json({
             "success": true,

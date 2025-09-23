@@ -1,11 +1,14 @@
-const Course = require("../models/courses");
+const Course = require("../models/Course");
 const Errorresponse = require("../utils/errorResponse");
 const jwt = require("jsonwebtoken");
 const BootCamp = require("../models/BootCamp");
 
+//@desc - get all courses
+//@route - /api/v1/bootcamps/:bootcampId/courses/
+//@access - public
 exports.getCourses = async (req, res, next) => {
     try {
-        const courses = await course.find();
+        const courses = await Course.find();
         res.status(200).json({
             message: "courses fetched success",
             courses: courses
@@ -23,20 +26,24 @@ exports.createCourse = async (req, res, next) => {
     try {
 
         req.body.bootcamp = req.params.bootcampId;
+        console.log("params===>",req.params.bootcampId);
+        
         req.body.user = req.user.id;
 
         const bootcamp = await BootCamp.findById(req.params.bootcampId);
+        console.log("bootcamp===>",bootcamp);
+        
 
         if(!bootcamp){
-            next(new Errorresponse(`Bootcapm not found with id ${req.params.bootcampId}`, 404));
+           return next(new Errorresponse(`Bootcapm not found with id ${req.params.bootcampId}`, 404));
         }
 
         //make sure user owns the bootcamp or has admin role.
 
-        if(bootcamp.user.toString() != req.user.id || req.user.role != "admin"){
-            next(new Errorresponse(`user ${req.user.id} is not authorized to create course`, 401));
+        if(bootcamp.user.toString() != req.user.id && req.user.role != "admin"){
+            return next(new Errorresponse(`user ${req.user.id} is not authorized to create course`, 401));
         }
-
+          
         const course = await Course.create(req.body);
 
         res.status(201).json({
@@ -50,9 +57,21 @@ exports.createCourse = async (req, res, next) => {
     }
 }
 
+//@desc - update course  by id
+//@route - /api/v1/bootcamps/:bootcampId/courses/:id
+//@access - private
 exports.updateCourse = async (req, res, next) => {
     try {
-        const updated = await course.findByIdAndUpdate(req.params.id, req.body);
+       
+       const bootcamp=await BootCamp.findById(req.params.bootcampId);
+
+       if(bootcamp.user.toString()!=req.user.id && req.user.role !="admin"){
+
+        next(new Errorresponse("not allowed to update",401))
+
+       }
+        
+        await Course.findByIdAndUpdate(req.params.id, req.body);
         res.status(200).json({
             "success": true,
             "message": "course updated ssuccessfully"
@@ -64,9 +83,17 @@ exports.updateCourse = async (req, res, next) => {
     }
 }
 
+//@desc - delete courses by id
+//@route - /api/v1/bootcamps/:bootcampId/courses/:id
+//@access - private
 exports.deleteCourse = async (req, res, next) => {
     try {
-        const deleteCourse = await course.findByIdAndDelete(req.params.id);
+
+        const bootcamp=await BootCamp.findById(req.params.bootcampId)
+        if(bootcamp.user.toString()!=req.user.id && req.user.role!="admin"){
+            return next(new Errorresponse("not allowed to delete",401))
+        }
+         await Course.findByIdAndDelete(req.params.id);
         res.status(200).json({
             "success": true,
             "message": "successfully deleted course"
