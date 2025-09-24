@@ -47,7 +47,6 @@ exports.createBootCamp = async (req, res, next) => {
       data: bootCamp,
     });
   } catch (error) {
-    console.log("Error occured while creating boot camp", error);
     next(error);
   }
 };
