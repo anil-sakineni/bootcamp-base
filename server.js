@@ -3,8 +3,9 @@ const express = require("express");
 const connectDB = require("./config/db");
 const cors = require("cors");
 const errorHandler = require("./middleware/error");
+const requestIdMiddleware = require("./middleware/requestId");
 const logger = require("./utils/logger");
-const pino = require("pino-http");
+const pinoHttp = require("pino-http");
 const cookieParser = require("cookie-parser");
 //route files
 const bootcamps = require("./routes/bootcamps");
@@ -17,6 +18,9 @@ connectDB();
 
 const app = express();
 
+//RequestId generator
+app.use(requestIdMiddleware);
+
 // Body Parser
 app.use(express.json());
 
@@ -28,7 +32,11 @@ app.use(cookieParser());
 app.use(cors());
 
 // http logger
-app.use(pino({ logger }));
+app.use(pinoHttp({
+  logger: logger,
+  genReqId: (req) => req.requestId,
+  customProps: (req, res) => ({requestId: req.requestId})
+}));
 
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);

@@ -65,10 +65,13 @@ exports.getMe = async function (req, res, next) {
 //@route - api/v1/auth/forgotPassword
 //@access - public
 exports.forgotPassword = async function (req, res, next) {
+  const logger = request.log;
   try {
-    //naresh.kakarla@gmail.com
-    //anil.sa@gmail.com
-
+    logger.debug({
+      filename: 'server.js',
+      lineNumber: 12,
+      msg: 'A custom message for the test endpoint.'
+    })
     const user = await User.findOne({ email: req.body.email });
 
     // two factor authentication or send token to the perticular email
