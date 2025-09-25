@@ -2,11 +2,13 @@ const User = require("../models/User");
 const crypto = require("crypto");
 const ErrorResponse = require("../utils/errorResponse");
 const sendEmail = require("../utils/sendEmail");
+const logger = require("../utils/logger");
 
 //@desc - register a user
 //@route - api/v1/auth/register
 //@access - public
 exports.register = async function (req, res, next) {
+  logger.debug("registering new user", req.requestId);
   try {
     const { name, email, role, password } = req.body;
     if (!["user"].includes(role)) {
@@ -18,6 +20,8 @@ exports.register = async function (req, res, next) {
     const user = await User.create({ name, email, role, password });
     sendToken(user, 201, "user created successfully", res);
   } catch (err) {
+    log.erro("Erro message")
+    log.fatal("fatal message")
     next(err);
   }
 };
