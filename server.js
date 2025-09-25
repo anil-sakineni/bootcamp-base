@@ -11,7 +11,6 @@ const cookieParser = require("cookie-parser");
 const bootcamps = require("./routes/bootcamps");
 const User = require("./routes/user");
 const auth = require("./routes/auth");
-const course = require("./routes/courses");
 
 // connect to Database
 connectDB();
@@ -32,11 +31,15 @@ app.use(cookieParser());
 app.use(cors());
 
 // http logger
-app.use(pinoHttp({
-  logger: logger,
-  genReqId: (req) => req.requestId,
-  customProps: (req, res) => ({requestId: req.requestId})
-}));
+app.use(
+  pinoHttp({
+    logger: logger,
+    genReqId: (req) => req.requestId,
+    customProps: (req, res) => ({
+      requestId: req.requestId,
+    }),
+  })
+);
 
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);
