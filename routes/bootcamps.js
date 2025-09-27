@@ -20,12 +20,12 @@ router.use("/:bootcampId/review",reviewRouter);
 
 router
   .route("/")
-  .get(protect, authorize("user", "publisher", "admin"), getBootcamps)
+  .get(getBootcamps)
   .post(protect, authorize("publisher", "admin"), createBootCamp);
 
 router
   .route("/:id")
-  .get(protect, authorize("user", "publisher", "admin"), getBootcamp)
+  .get(getBootcamp)
   .put(protect, authorize("publisher", "admin"), updateBootCamp)
   .delete(protect, authorize("publisher", "admin"), deleteBootcamp);
 
