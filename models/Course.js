@@ -13,7 +13,7 @@ const schema = {
     type: Number,
     required: [true, "please add weeks"],
   },
-  tuitionFee: {
+  tuition: {
     type: Number,
     required: [true, "please mention amount"],
   },
@@ -22,7 +22,7 @@ const schema = {
     required: [true, "please add minimim skill"],
     enum: ["beginner", "intermediate", "advanced"],
   },
-  ScholarshipAvailable: {
+  scholarshipsAvailable: {
     type: Boolean,
     required: [true, "please mention scholorship is available or not"],
   },

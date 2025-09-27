@@ -10,7 +10,12 @@ exports.getCourses = async (req, res, next) => {
   logger.debug("entering into getCourses controller function", req.requestId);
   try {
     logger.debug("trying to find courses by bootcamp", req.requestId);
-    const courses = await Course.find({ bootcamp: req.params.bootcampId });
+    const courses = await Course.find({
+      bootcamp: req.params.bootcampId,
+    }).populate({
+      path: "bootcamp",
+      select: "name description",
+    });
     logger.info("successfully find courses by bootcamp", req.requestId);
     res.status(200).json({
       message: "courses fetched success",
@@ -78,6 +83,22 @@ exports.createCourse = async (req, res, next) => {
   }
 };
 
+//@desc - get course  by id
+//@route - /api/v1/bootcamps/:bootcampId/courses/:id
+//@access - public
+
+exports.getCourseById = async (req, res, next) => {
+  try {
+    const course = await Course.findById(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: `course found by ${req.params.id}`,
+      course: course,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 //@desc - update course  by id
 //@route - /api/v1/bootcamps/:bootcampId/courses/:id
 //@access - private

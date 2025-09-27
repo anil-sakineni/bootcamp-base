@@ -82,9 +82,11 @@ BootCampSchema.pre(
   "deleteOne",
   { document: true, query: false },
   async function (next) {
-    await this.model("Course").deleteMany({ bootcamp: this._id });
+    await this.model("Course" && "Review").deleteMany({ bootcamp: this._id });
+   
     next();
   }
 );
+
 
 module.exports = mongoose.model("BootCamp", BootCampSchema);
