@@ -5,13 +5,12 @@ const cors = require("cors");
 const errorHandler = require("./middleware/error");
 const requestIdMiddleware = require("./middleware/requestId");
 const logger = require("./utils/logger");
-const pinoHttp = require("pino-http");
 const cookieParser = require("cookie-parser");
+
 //route files
 const bootcamps = require("./routes/bootcamps");
 const User = require("./routes/user");
 const auth = require("./routes/auth");
-const course = require("./routes/courses");
 
 // connect to Database
 connectDB();
@@ -31,12 +30,6 @@ app.use(cookieParser());
 
 app.use(cors());
 
-// http logger
-app.use(pinoHttp({
-  logger: logger,
-  genReqId: (req) => req.requestId,
-  customProps: (req, res) => ({requestId: req.requestId})
-}));
 
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);
@@ -53,5 +46,5 @@ app.get("/health", (request, response) => {
 });
 
 app.listen(PORT, () => {
-  logger.info(`Server is listening on port : ${PORT}`);
+  logger.info(`Server is listening on port : ${PORT}`, "1234");
 });
