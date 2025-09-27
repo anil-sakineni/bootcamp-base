@@ -11,13 +11,18 @@ exports.getBootcamps = async (req, res, next) => {
     req.requestId
   );
   try {
-    logger.debug("trying to find bootcamps", req.requestId);
-    const bootcamps = await BootCamp.find();
-    logger.info("successfully founded bootcamps", req.requestId);
-    return res.status(200).json({
-      success: true,
-      bootcamp: bootcamps,
-    });
+    res.status(200).json(res.advancedResults);
+
+    // if(res?.advancedResults){
+      
+    // }
+    // logger.debug("trying to find bootcamps", req.requestId);
+    // const bootcamps = await BootCamp.find();
+    // logger.info("successfully founded bootcamps", req.requestId);
+    // return res.status(200).json({
+    //   success: true,
+    //   bootcamp: bootcamps,
+    // });
   } catch (err) {
     logger.error("error occured while finding bootcamps", req.requestId);
     next(err);

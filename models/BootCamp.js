@@ -73,10 +73,13 @@ const schema = {
   createdAt: {
     type: Date,
     default: Date.now,
-  },
+  }
 };
 
-const BootCampSchema = new mongoose.Schema(schema);
+const BootCampSchema = new mongoose.Schema(schema, {
+        toJSON: { virtuals: true }, // Include virtuals when converting to JSON (e.g., res.json)
+        toObject: { virtuals: true } // Include virtuals when converting to a plain JS object
+    });
 
 BootCampSchema.pre(
   "deleteOne",
@@ -87,6 +90,12 @@ BootCampSchema.pre(
     next();
   }
 );
+
+BootCampSchema.virtual('courses', {
+  ref: 'Course',
+  localField: '_id',
+  foreignField: 'bootcamp'
+})
 
 
 module.exports = mongoose.model("BootCamp", BootCampSchema);
