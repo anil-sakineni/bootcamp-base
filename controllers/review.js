@@ -17,15 +17,6 @@ exports.createReview = async (req, res, next) => {
         new Errorresponse(`no bootcamp found by ${req.params.bootcampId}`, 404)
       );
     }
-    if (
-      bootcamp.user.toString() != req.user.id &&
-      req.user.role != "user" &&
-      req.user.role != "admin"
-    ) {
-      return next(
-        new Errorresponse("you are not allowed to review the bootcamp")
-      );
-    }
 
     const review = await Review.create(req.body);
     res.status(201).json({
@@ -43,6 +34,7 @@ exports.createReview = async (req, res, next) => {
 //@access - public
 exports.getReviews = async (req, res, next) => {
   try {
+    req.body.bootcamp = req.params.bootcampId;
     const reviews = await Review.find();
     res.status(200).json({
       success: true,

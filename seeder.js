@@ -1,55 +1,59 @@
-const path = require("path");
-require("dotenv").config({
-  path: path.join(__dirname, "config/config.dev.env"),
-});
-const connectDB = require("./config/db");
-
-console.log("args",args);
+const fs = require("fs");
+require("dotenv").config({ path: "./config/config.dev.env" });
+const mongoose = require("mongoose");
 
 
 //load env data
-const bootcamps = require("./_data/bootcamps");
-const courses = require("./_data/courses");
-const reviews = require("./_data/reviews");
-const users = require("./_data/users");
 
-// load models
-const bootcampModel = require("./models/BootCamp");
-const courseModel = require("./models/Course");
-const userModel = require("./models/User");
-const reviewModel = require("./models/Review");
+
+//loadModels
+const BootCamp = require("./models/BootCamp");
+const Course = require("./models/Course");
+const User = require("./models/User");
+const Review = require("./models/Review");
 
 //connect to DB
+const MONGO_SERVER = process.env.MONGO_SERVER || "";
+const USERNAME = process.env.MONGO_USERNAME || "";
+const PASSWORD = process.env.MONGO_PASSWORD || "";
+const MONGO_URI = `mongodb+srv://${USERNAME}:${PASSWORD}@${MONGO_SERVER}`;
+mongoose.connect(MONGO_URI);
 
-//load all JSOn files
-async function insert() {    
-  await connectDB();
-  await userModel.insertMany(users);
-  await bootcampModel.insertMany(bootcamps);
-  await courseModel.insertMany(courses);
-  await reviewModel.insertMany(reviews);
-  console.log("successfully inserted");
-  
+
+//read all JSON files
+const bootcampData = JSON.parse(fs.readFileSync(`${__dirname}/_data/bootcamps.json`));
+const courseData = JSON.parse(fs.readFileSync(`${__dirname}/_data/courses.json`));;
+const reviewsData = JSON.parse(fs.readFileSync(`${__dirname}/_data/reviews.json`));
+const userData = JSON.parse(fs.readFileSync(`${__dirname}/_data/users.json`));
+
+
+//import data
+async function importData() {    
+  await User.create(userData);
+  await BootCamp.create(bootcampData);
+  await Course.create(courseData);
+  await Review.create(reviewsData);
+  console.log("Data Imported");
+  process.exit()
 }
 
-async function Delete() {
-  await connectDB();
-  await userModel.deleteMany();
-  await bootcampModel.deleteMany();
-  await courseModel.deleteMany();
-  await reviewModel.deleteMany();
-  console.log("successfully deleted");
+//delete data
+async function deleteDate() {
+  await User.deleteMany();
+  await BootCamp.deleteMany();
+  await Course.deleteMany();
+  await Review.deleteMany();
+
+  console.log("Data Destroyed");
+  process.exit()
 }
 
-// import data to DB if operation is -i
-if (args.includes("-i")) {
-  insert();
-}
-// delete data from. db if operation is -d
-else if (args.includes("-d")) {
-  console.log("delete function");
+if(process.argv[2] === "-i"){
+  importData();
 
-  Delete();
+} else if(process.argv[2] === "-d"){
+  deleteDate();
+
+}else {
+  console.log("un supported operation")
 }
-// seeder.js -i
-// seeder.js -d
