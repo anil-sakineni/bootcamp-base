@@ -7,10 +7,11 @@ const {
   deleteCourse,
   getCourseById,
 } = require("../controllers/courses");
-
+const Course = require("../models/Course");
+const advancedResults=require("../middleware/advancedResults");
 const router = express.Router({ mergeParams: true });
 
-router.get("/",protect,authorize("user","publisher","admin"), getCourses);
+router.get("/",advancedResults(Course, "bootcamps"), getCourses);
 router.post("/", protect, authorize("publisher", "admin"), createCourse);
 router.get("/:id",protect,authorize("user","publisher","admin"),getCourseById)
 router.put("/:id", protect, authorize("publisher", "admin"), updateCourse);

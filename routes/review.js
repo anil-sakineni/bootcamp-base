@@ -6,6 +6,8 @@ const {
   updateReview,
   deleteReview,
 } = require("../controllers/review");
+const advancedResults = require("../middleware/advancedResults");
+const Review = require("../models/Review");
 
 const router = express.Router({ mergeParams: true });
 
@@ -15,7 +17,7 @@ router.post(
   authorize("user", "publisher", "admin"),
   createReview
 );
-router.get("/", protect, authorize("user", "publisher", "admin"), getReviews);
+router.get("/", advancedResults(Review, "bootcamps"), getReviews);
 router.put(
   "/:id",
   protect,

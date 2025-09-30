@@ -4,7 +4,6 @@ const connectDB = require("./config/db");
 const cors = require("cors");
 const errorHandler = require("./middleware/error");
 const requestIdMiddleware = require("./middleware/requestId");
-const logger = require("./utils/logger");
 const cookieParser = require("cookie-parser");
 
 //route files
@@ -46,5 +45,6 @@ app.get("/health", (request, response) => {
 });
 
 app.listen(PORT, () => {
-  logger.info(`Server is listening on port : ${PORT}`, "1234");
+  console.log(`Server is listening on port : ${PORT}`);
+  
 });
