@@ -34,13 +34,7 @@ exports.createReview = async (req, res, next) => {
 //@access - public
 exports.getReviews = async (req, res, next) => {
   try {
-    req.body.bootcamp = req.params.bootcampId;
-    const reviews = await Review.find();
-    res.status(200).json({
-      success: true,
-      message: "reviews found successfully",
-      reviews: reviews,
-    });
+    res.status(200).json(res.advancedResults);
   } catch (err) {
     next(err);
   }

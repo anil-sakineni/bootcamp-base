@@ -2,10 +2,6 @@ const fs = require("fs");
 require("dotenv").config({ path: "./config/config.dev.env" });
 const mongoose = require("mongoose");
 
-
-//load env data
-
-
 //loadModels
 const BootCamp = require("./models/BootCamp");
 const Course = require("./models/Course");
