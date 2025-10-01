@@ -96,12 +96,6 @@ exports.forgotPassword = async function (req, res, next) {
     const message = `You are receiving this email because you (or someone else) has requested the reset of password. 
         if you have requested the reset password please click below link to generate new password: \n\n ${resetUrl}`;
 
-    // return res.status(200).json({
-    //     "success": true,
-    //     "message": message,
-    //     " reseturl": resetUrl
-    // })
-
     await sendEmail({
       gmail: user.email,
       subject: "password reset token",

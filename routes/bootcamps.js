@@ -8,17 +8,22 @@ const {
   deleteBootcamp,
 } = require("../controllers/bootcamps");
 
+const advancedResults=require("../middleware/advancedResults");
+
 // Include Other Resourse Routers
-const courseRouter = require("../routes/courses");
+const courseRouter = require("./courses");
+const reviewRouter= require("./review");
+const BootCamp = require("../models/BootCamp");
 
 const router = express.Router();
 
 // Re route into other resource routers
 router.use("/:bootcampId/courses", courseRouter);
+router.use("/:bootcampId/review", reviewRouter);
 
 router
   .route("/")
-  .get(protect, authorize("user", "publisher", "admin"), getBootcamps)
+  .get(advancedResults(BootCamp,{path:"courses",select:"title  description"}), getBootcamps)
   .post(protect, authorize("publisher", "admin"), createBootCamp);
 
 router

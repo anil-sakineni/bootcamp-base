@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const logger = require("../utils/logger");
 
 const MONGO_SERVER = process.env.MONGO_SERVER || "";
 const USERNAME = process.env.MONGO_USERNAME || "";
@@ -10,9 +9,11 @@ const MONGO_URI = `mongodb+srv://${USERNAME}:${PASSWORD}@${MONGO_SERVER}`;
 const connectDB = async function () {
   try {
     await mongoose.connect(MONGO_URI);
-    logger.info("connected to db");
+    console.log("connected to database");
+    
   } catch (error) {
-    logger.error("connection failed", error);
+    console.log("connection failed", error);
+    
   }
 };
 
