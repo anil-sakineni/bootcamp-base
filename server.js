@@ -29,13 +29,6 @@ app.use(cookieParser());
 
 app.use(cors());
 
-// http logger
-// app.use(pinoHttp({
-//   logger: logger,
-//   genReqId: (req) => req.requestId,
-//   customProps: (req, res) => ({requestId: req.requestId})
-// }));
-
 // Mount routes
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/user", User);
