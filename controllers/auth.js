@@ -31,7 +31,7 @@ exports.login = async function (req, res, next) {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      next(new ErrorResponse("no user founded", 404));
+      next(new ErrorResponse("user  not found", 404));
     }
 
     const isMatch = await user.matchPassword(password);

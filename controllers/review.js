@@ -14,7 +14,7 @@ exports.createReview = async (req, res, next) => {
 
     if (!bootcamp) {
       return next(
-        new Errorresponse(`no bootcamp found by ${req.params.bootcampId}`, 404)
+        new Errorresponse(` bootcamp with ${req.params.bootcampId} is not available`, 404)
       );
     }
 
@@ -48,10 +48,10 @@ exports.updateReview = async (req, res, next) => {
   try {
     const review = await Review.findById(req.params.id);
     if (!review) {
-      next(new Errorresponse(`no user found  by ${req.params.id}`, 404));
+      next(new Errorresponse(`review with ${req.params.id} is not available`, 404));
     }
     if (review.user.toString() != req.user.id && req.user.role != "admin") {
-      next(new Errorresponse("not allowed to updata", 401));
+      next(new Errorresponse( `user with ${req.user.id} not allowed to update the review`, 401));
     }
 
     await Review.findByIdAndUpdate(req.params.id, req.body);
@@ -69,11 +69,11 @@ exports.deleteReview = async (req, res, next) => {
     const review = await Review.findById(req.params.id);
     if (!review) {
       next(
-        new Errorresponse(`no review found by ${req.params.id} delete`, 404)
+        new Errorresponse(`Review with ${req.params.id} is not available`, 404)
       );
     }
     if (review.user.toString() != req.user.id && req.user.role != "admin") {
-      next(new Errorresponse("not allowed to updata", 401));
+      next(new Errorresponse( `user with ${req.user.id} not allowed to delete the course`, 401));
     }
     await Review.deleteOne();
     res.status(200).json({

@@ -26,7 +26,7 @@ exports.createCourse = async (req, res, next) => {
     if (!bootcamp) {
       return next(
         new Errorresponse(
-          `Bootcamp not found with id ${req.params.bootcampId}`,
+          `Bootcamp not find with id ${req.params.bootcampId}`,
           404
         )
       );
@@ -113,7 +113,7 @@ exports.deleteCourse = async (req, res, next) => {
     if (!course) {
       return next(
         new Errorresponse(
-          `no course is available from this ${req.params.id}`,
+          `course with ${req.params.id} is not available`,
           404
         )
       );
