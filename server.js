@@ -19,10 +19,14 @@ const app = express();
 //RequestId generator
 app.use(requestIdMiddleware);
 
+//RequestId generator
+app.use(requestIdMiddleware);
+
 // Body Parser
 app.use(express.json());
 
 // cookie parser
+app.use(cookieParser());
 app.use(cookieParser());
 
 //enable cors
@@ -40,6 +44,8 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
+app.get("/health", (request, response) => {
+  response.status(200).json({ message: "API is running" });
 app.get("/health", (request, response) => {
   response.status(200).json({ message: "API is running" });
 });

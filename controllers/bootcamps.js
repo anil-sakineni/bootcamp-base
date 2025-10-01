@@ -61,6 +61,8 @@ exports.getBootcamp = async (req, res, next) => {
 exports.updateBootCamp = async (req, res, next) => {
   try {
     const bootCamp = await BootCamp.findById(req.params.id);
+  try {
+    const bootCamp = await BootCamp.findById(req.params.id);
 
     if (!bootCamp) {
       return next(
@@ -94,13 +96,32 @@ exports.updateBootCamp = async (req, res, next) => {
 exports.deleteBootcamp = async (req, res, next) => {
   try {
     const bootCamp = await BootCamp.findById(req.params.id);
+  try {
+    const bootCamp = await BootCamp.findById(req.params.id);
 
     if (!bootCamp) {
       return next(
         new Errorresponse(`no bootcamp found by this ${req.params.id}`, 404)
       );
     }
+    if (!bootCamp) {
+      return next(
+        new Errorresponse(`no bootcamp found by this ${req.params.id}`, 404)
+      );
+    }
 
+    if (bootCamp.user.toString() != req.user.id && req.user.role != "admin") {
+      return next(new Errorresponse(`not alloed to delete`, 401));
+    }
+    await bootCamp.deleteOne();
+    return res.status(200).json({
+      success: true,
+      message: "Bootcamp deleted successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
     if (bootCamp.user.toString() != req.user.id && req.user.role != "admin") {
       return next(new Errorresponse(`not alloed to delete`, 401));
     }

@@ -1,4 +1,5 @@
 const Course = require("../models/Course");
+const Course = require("../models/Course");
 const Errorresponse = require("../utils/errorResponse");
 const BootCamp = require("../models/BootCamp");
 
