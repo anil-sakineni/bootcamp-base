@@ -6,12 +6,7 @@ const Errorresponse = require("../utils/errorResponse");
 //@access - public
 exports.getBootcamps = async (req, res, next) => {
   try {
-    const bootcamps = await BootCamp.find();
-
-    return res.status(200).json({
-      success: true,
-      bootcamp: bootcamps,
-    });
+   res.status(200).json(res.advancedResults);
   } catch (err) {
     next(err);
   }
@@ -60,7 +55,7 @@ exports.getBootcamp = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: `founded bootcamp by ${req.params.id}`,
+      message: `Bootcamp founded by ${req.params.id}`,
       bootcamp: bootcamp,
     });
   } catch (err) {
@@ -77,12 +72,12 @@ exports.updateBootCamp = async (req, res, next) => {
 
     if (!bootCamp) {
       return next(
-        new Errorresponse(`no bootcamp found by this ${req.params.id}`, 404)
+        new Errorresponse(`Bootcamp not find by this ${req.params.id}`, 404)
       );
     }
 
     if (bootCamp.user != req.user.id && req.user.role != "admin") {
-      return next(new Errorresponse(`not alloed to update`, 400));
+      return next(new Errorresponse(`you are not authorized to updateuser with ${req.user.id} not allowed to update the bootcamp`, 400));
     }
 
     const updatedBootcamp = await BootCamp.findByIdAndUpdate(
@@ -117,12 +112,12 @@ exports.deleteBootcamp = async (req, res, next) => {
 
     if (!bootCamp) {
       return next(
-        new Errorresponse(`no bootcamp found by this ${req.params.id}`, 404)
+        new Errorresponse(`Bootcamp not find by this ${req.params.id}`, 404)
       );
     }
 
     if (bootCamp.user.toString() != req.user.id && req.user.role != "admin") {
-      return next(new Errorresponse(`not alloed to delete`, 401));
+      return next(new Errorresponse(`user with ${req.user.id} not allowed to delete the bootcamp`, 401));
     }
     await bootCamp.deleteOne();
     return res.status(200).json({

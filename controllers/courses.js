@@ -6,12 +6,8 @@ const BootCamp = require("../models/BootCamp");
 //@route - /api/v1/bootcamps/:bootcampId/courses/
 //@access - public
 exports.getCourses = async (req, res, next) => {
-  try {
-    const courses = await Course.find({ bootcamp: req.params.bootcampId });
-    res.status(200).json({
-      message: "courses fetched success",
-      courses: courses,
-    });
+  try {    
+   res.status(200).json(res.advancedResults);
   } catch (err) {
     next(err);
   }
@@ -30,7 +26,7 @@ exports.createCourse = async (req, res, next) => {
     if (!bootcamp) {
       return next(
         new Errorresponse(
-          `Bootcamp not found with id ${req.params.bootcampId}`,
+          `Bootcamp not find with id ${req.params.bootcampId}`,
           404
         )
       );
@@ -59,6 +55,22 @@ exports.createCourse = async (req, res, next) => {
     res.status(201).json({
       message: "course create successfully",
       success: true,
+      course: course,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+//@desc - get course  by id
+//@route - /api/v1/bootcamps/:bootcampId/courses/:id
+//@access - private
+exports.getCourseById = async (req, res, next) => {
+  try {
+    const course = await Course.findById(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: `course found by ${req.params.id}`,
       course: course,
     });
   } catch (err) {
@@ -101,7 +113,7 @@ exports.deleteCourse = async (req, res, next) => {
     if (!course) {
       return next(
         new Errorresponse(
-          `no course is available from this ${req.params.id}`,
+          `course with ${req.params.id} is not available`,
           404
         )
       );

@@ -31,7 +31,7 @@ exports.login = async function (req, res, next) {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      next(new ErrorResponse("no user founded", 404));
+      next(new ErrorResponse("user  not found", 404));
     }
 
     const isMatch = await user.matchPassword(password);
@@ -95,12 +95,6 @@ exports.forgotPassword = async function (req, res, next) {
 
     const message = `You are receiving this email because you (or someone else) has requested the reset of password. 
         if you have requested the reset password please click below link to generate new password: \n\n ${resetUrl}`;
-
-    // return res.status(200).json({
-    //     "success": true,
-    //     "message": message,
-    //     " reseturl": resetUrl
-    // })
 
     await sendEmail({
       gmail: user.email,
