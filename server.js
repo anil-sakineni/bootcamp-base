@@ -25,10 +25,10 @@ app.use(express.json());
 // cookie parser
 app.use(cookieParser());
 
-app.set("query parser", "extended");
+// query parser
+app.set("query parser","extended")
 
 //enable cors
-
 app.use(cors());
 
 // Mount routes

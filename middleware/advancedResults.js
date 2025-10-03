@@ -5,7 +5,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
 
   const reqQuery = { ...req.query };
 
-  const removeFields = ["select", "sort"];
+  const removeFields = ["select", "sort", "page", "limit"];
   removeFields.forEach((param) => delete reqQuery[param]);
 
   let queryString = JSON.stringify(reqQuery);
@@ -34,16 +34,39 @@ const advancedResults = (model, populate) => async (req, res, next) => {
     query = query.sort({ _id: 1 });
   }
 
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  query = query.skip(skip).limit(limit);
   if (populate) {
     query = query.populate(populate);
   }
+  const pagination = {};
+
+  pagination.next = {
+    page: page + 1,
+    limit: limit,
+  };
+
+  pagination.prev = {
+    page: page - 1,
+    limit: limit,
+  };
 
   const results = await query;
+  if (pagination.prev.page == 0) {
+    pagination.prev = "";
+  }
+  if (results.length === 0) {
+    pagination.next = "";
+  }
 
   res.advancedResults = {
     success: true,
     count: results.length,
     data: results,
+    pagination,
   };
 
   next();
