@@ -25,6 +25,8 @@ app.use(express.json());
 // cookie parser
 app.use(cookieParser());
 
+app.set("query parser", "extended");
+
 //enable cors
 
 app.use(cors());
@@ -45,5 +47,4 @@ app.get("/health", (request, response) => {
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port : ${PORT}`);
-  
 });
