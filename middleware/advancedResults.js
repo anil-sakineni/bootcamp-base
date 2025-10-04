@@ -6,17 +6,16 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   const reqQuery = { ...req.query };
 
   const removeFields = ["select", "sort", "page", "limit"];
+
   removeFields.forEach((param) => delete reqQuery[param]);
 
   let queryString = JSON.stringify(reqQuery);
 
   //create operators ($gt, $gte, $lt, $lte)
   queryString = queryString.replace(/\b(lt|lte|gt|gte|in)\b/g, match => `$${match}`);
-      
 
   query = model.find(JSON.parse(queryString));
 
-  
 
   if (req.params.bootcampId) {
     query = query.find({ bootcamp: req.params.bootcampId });
@@ -28,48 +27,54 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   }
 
   if(req.query.sort){
-    const fields = req.query.sort.split(",").join(" ");
-    query = query.sort(fields);
+    const sortBy = req.query.sort.split(',').join(' ');
+    query = query.sort(sortBy);
   }else{
-    query = query.sort({ _id: 1 });
+    query = query.sort('-_id');
   }
 
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
+  //pagination
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 25;
 
-  query = query.skip(skip).limit(limit);
+  const startIndex = (page -1) * limit;
+
+  const endIndex = page * limit;
+  const totalRecords = await model.countDocuments();
+  query = query.skip(startIndex).limit(limit);
+
   if (populate) {
     query = query.populate(populate);
   }
+
   const pagination = {};
 
-  pagination.next = {
-    page: page + 1,
-    limit: limit,
-  };
+  if(endIndex < totalRecords){
+    pagination.next = {
+      page: page +1,
+      limit
+    }
+  }
 
-  pagination.prev = {
-    page: page - 1,
-    limit: limit,
-  };
+  if(startIndex > 0){
+    pagination.prev = {
+            page : page - 1,
+            limit
+        } 
+  }
 
   const results = await query;
-  if (pagination.prev.page == 0) {
-    pagination.prev = "";
-  }
-  if (results.length === 0) {
-    pagination.next = "";
-  }
 
   res.advancedResults = {
     success: true,
     count: results.length,
-    data: results,
     pagination,
+    data: results,
   };
 
   next();
 };
 
 module.exports = advancedResults;
+
+
